@@ -5,12 +5,20 @@ import cdriz_setup
 
 
 @pytest.fixture
-def kernel_pars():
+def kernel_pars(request):
+    kernel = request.getfixturevalue("kernel")
     # get cdriz.triz inputs from cdriz_setup.py
-    _params = cdriz_setup.Get_Grid(inx=10, iny=10, outx=13, outy=13, offset=[1.234e-6, 1.234e-6])
-    _params.zero_background()
-    return _params
 
+    # Only offset the output WCS for the "point" kernel,
+    # so that we can avoid kernel falling on either side of an edge between
+    # pixels.
+    offset = 1.0e-6 * np.pi * np.ones(2, dtype=float) if kernel == "point" else None
+
+    params = cdriz_setup.Get_Grid(
+        inx=10, iny=10, outx=13, outy=13, offset=offset
+    )
+    params.zero_background()
+    return params
 
 # "square", "point", "turbo", "gaussian", "lanczos3"
 @pytest.mark.parametrize("kernel", ["square", "point", "turbo"])
