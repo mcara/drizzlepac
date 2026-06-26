@@ -9,7 +9,7 @@ def kernel_pars(request):
     # Only offset the output WCS for the "point" kernel,
     # so that we can avoid kernel falling on either side of an edge between
     # pixels.
-    offset = [1e-2, 0] if kernel == "point" else None
+    offset = [1.0e-2, 1.0e-2] if kernel == "point" else None
     _params = cdriz_setup.Get_Grid(inx=50, iny=60, outx=51, outy=66, offset=offset, background=0.0)
     return _params
 
