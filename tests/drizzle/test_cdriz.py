@@ -15,9 +15,8 @@ def kernel_pars(request):
     offset = 1.0e-5 * np.pi * np.ones(2, dtype=float) if kernel == "point" else None
 
     params = cdriz_setup.Get_Grid(
-        inx=10, iny=10, outx=13, outy=13, offset=offset
+        inx=10, iny=10, outx=13, outy=13, offset=offset, background=0.0
     )
-    params.zero_background()
     return params
 
 # "square", "point", "turbo", "gaussian", "lanczos3"

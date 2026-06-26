@@ -30,11 +30,16 @@ class Get_Grid:
 
     """
 
-    def __init__(self, inx, iny, outx, outy, offset=None):
+    def __init__(self, inx, iny, outx, outy, offset=None, background=0.0):
         np.random.seed(0)  # keep same random across each instance
         self.in_grid = (iny, inx)  # use numpy indexing order (y,x)
         self.out_grid = (outy, outx)  # use numpy indexing order (y,x)
-        self.insci = np.random.randn(self.in_grid[0], self.in_grid[1]).astype("float32")
+        if background is None:
+            background = 0.0
+        elif background == "random":
+            self.insci = np.random.randn(iny, inx).astype("float32")
+        else:
+            self.insci = np.full(self.in_grid, background, dtype=np.float32)
         self.inwht = np.ones(self.in_grid, dtype=np.float32)
         self.dny = self.insci.shape[1]  # input y_grid
         self.outsci = np.zeros(self.out_grid, dtype=np.float32)
@@ -45,13 +50,8 @@ class Get_Grid:
         if offset is not None:
             self.w2.wcs.crpix = np.add(self.w2.wcs.crpix, offset)
         self.mapping = cdriz.DefaultWCSMapping(
-            self.w1, self.w2, self.in_grid[0], self.in_grid[1], 1
+            self.w1, self.w2, iny, inx, 1
         )
-
-    def zero_background(self):
-        super().__init__()
-        self.insci = np.zeros(self.in_grid, dtype=np.float32)
-
 
 def cdriz_call(_set_kernel_pars, kernel):
     """

@@ -9,9 +9,8 @@ def kernel_pars(request):
     # Only offset the output WCS for the "point" kernel,
     # so that we can avoid kernel falling on either side of an edge between
     # pixels.
-    offset = [1e-5, 0] if kernel == "point" else None
-    _params = cdriz_setup.Get_Grid(inx=50, iny=60, outx=51, outy=66, offset=offset)
-    _params.zero_background()
+    offset = [1e-2, 0] if kernel == "point" else None
+    _params = cdriz_setup.Get_Grid(inx=50, iny=60, outx=51, outy=66, offset=offset, background=0.0)
     return _params
 
 
@@ -145,10 +144,6 @@ def test_zero_input_weight(kernel_pars, kernel):
     kernel_pars : Class
         The Class initialized in Get_Class which includes all of the inputs need to run cdriz.tdriz.
     """
-
-    # zero for all insci
-    kernel_pars.zero_background()
-
     # add bad bright pixels in insci
     kernel_pars.insci[0:4, 0:4] = 1e8
     kernel_pars.inwht[0:4, 0:4] = 0
