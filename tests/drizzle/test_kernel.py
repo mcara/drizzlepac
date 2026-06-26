@@ -4,8 +4,13 @@ import cdriz_setup
 
 
 @pytest.fixture
-def kernel_pars():
-    _params = cdriz_setup.Get_Grid(inx=50, iny=60, outx=51, outy=66)
+def kernel_pars(request):
+    kernel = request.getfixturevalue("kernel")
+    # Only offset the output WCS for the "point" kernel,
+    # so that we can avoid kernel falling on either side of an edge between
+    # pixels.
+    offset = [1e-5, 0] if kernel == "point" else None
+    _params = cdriz_setup.Get_Grid(inx=50, iny=60, outx=51, outy=66, offset=offset)
     _params.zero_background()
     return _params
 
@@ -16,10 +21,10 @@ def test_point_data_kernel(kernel_pars, kernel):
 
     Parameters
     ----------
-    kernel_pars : Class
-        The Class initialized in Get_Grid which includes all of the inputs needed to run cdriz.tdriz.
     kernel : str
         String associated with one of the c code point kernel options.
+    kernel_pars : Class
+        The Class initialized in Get_Grid which includes all of the inputs needed to run cdriz.tdriz.
     """
 
     # truth filename
@@ -53,6 +58,7 @@ def test_point_data_kernel(kernel_pars, kernel):
         truth_array = np.genfromtxt(f"{output_fullpath}.csv", delimiter=",")
     except:
         cdriz_setup.save_array(kernel_pars.outsci, f"{output_fullpath}.csv")
+        truth_array = kernel_pars.outsci.copy()
 
     assert np.allclose(
         kernel_pars.outsci,
@@ -61,10 +67,9 @@ def test_point_data_kernel(kernel_pars, kernel):
         rtol=1e-5,
     ), cdriz_setup.error_message(kernel_pars.outsci, f"{output_fullpath}_new.csv")
 
-
-def test_cdriz_edge(kernel_pars):
+@pytest.mark.parametrize("kernel", ["gaussian"])
+def test_cdriz_edge(kernel_pars, kernel):
     """Similar to test_point_kernel but looking at bright pixels at edge of field."""
-    kernel = "gaussian"
 
     output_name = f"edge_{kernel}_truth"
     relative_path = "truth_files"
@@ -84,9 +89,9 @@ def test_cdriz_edge(kernel_pars):
     ), cdriz_setup.error_message(kernel_pars.outsci, f"{output_fullpath}_new.csv")
 
 
-def test_cdriz_large(kernel_pars):
+@pytest.mark.parametrize("kernel", ["gaussian"])
+def test_cdriz_large(kernel_pars, kernel):
     """Similar to test_point_kernel but looking at large pixel."""
-    kernel = "gaussian"
 
     output_name = f"large_square_{kernel}_truth"
     relative_path = "truth_files"
@@ -106,9 +111,9 @@ def test_cdriz_large(kernel_pars):
     ), cdriz_setup.error_message(kernel_pars.outsci, f"{output_fullpath}_new.csv")
 
 
-def test_cdriz_non_symmetrical(kernel_pars):
+@pytest.mark.parametrize("kernel", ["gaussian"])
+def test_cdriz_non_symmetrical(kernel_pars, kernel):
     """Similar to test_point_kernel but looking at non-symmetrical pixel."""
-    kernel = "gaussian"
 
     output_name = f"nonsymmetrical_{kernel}_truth"
     relative_path = "truth_files"
@@ -135,12 +140,12 @@ def test_zero_input_weight(kernel_pars, kernel):
 
     Parameters
     ----------
-    kernel_pars : Class
-        The Class initialized in Get_Class which includes all of the inputs need to run cdriz.tdriz.
     kernel : str
         String associated with one of the c code point kernel options.
-
+    kernel_pars : Class
+        The Class initialized in Get_Class which includes all of the inputs need to run cdriz.tdriz.
     """
+
     # zero for all insci
     kernel_pars.zero_background()
 
