@@ -34,9 +34,7 @@ class Get_Grid:
         np.random.seed(0)  # keep same random across each instance
         self.in_grid = (iny, inx)  # use numpy indexing order (y,x)
         self.out_grid = (outy, outx)  # use numpy indexing order (y,x)
-        if background is None:
-            background = 0.0
-        elif background == "random":
+        if background == "random":
             self.insci = np.random.randn(iny, inx).astype("float32")
         else:
             self.insci = np.full(self.in_grid, background, dtype=np.float32)
