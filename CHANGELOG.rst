@@ -21,6 +21,8 @@ number of the code change for that issue.  These PRs can be viewed at:
 3.12.0 (TBD)
 ============
 
+- Updated cdriz kernel tests to avoid rounding issues link to new version of WCSLIB in astropy 8.1.0. [#2164, #2165]
+
 - Replaced stregion with astropy-regions in mapreg.py, a module for reading and 
   parsing DS9 region files used for tweakreg. [#2125]
 
