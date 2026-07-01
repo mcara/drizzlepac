@@ -23,6 +23,9 @@ number of the code change for that issue.  These PRs can be viewed at:
 
 - Updated cdriz kernel tests to avoid rounding issues link to new version of WCSLIB in astropy 8.1.0. [#2164, #2165]
 
+- Improved MVM guide star failure check to reintroduce exposures that
+  were incorrectly excluded due to PSF spikes, saturation, and CTE issues. [#2101]
+
 - Replaced stregion with astropy-regions in mapreg.py, a module for reading and 
   parsing DS9 region files used for tweakreg. [#2125]
 
